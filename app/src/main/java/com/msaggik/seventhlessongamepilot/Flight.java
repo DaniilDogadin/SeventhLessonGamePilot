@@ -36,6 +36,7 @@ public class Flight {
         x = screenX / 21; // практически вначале оси X
     }
 
+
     // метод задания очерёдности переключения изображений полёта
     public Bitmap getFlight() {
 

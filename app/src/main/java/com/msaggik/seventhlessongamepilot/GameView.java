@@ -121,11 +121,6 @@ public class GameView extends SurfaceView implements Runnable{
             isPlaying = false;
             // приостановление потока
             thread.join();
-            /**
-             * метод join() — используется для того,
-             * чтобы приостановить выполнение текущего потока до тех пор,
-             * пока другой поток не закончит свое выполнение
-             */
         } catch (InterruptedException e) { // исключение на случай зависания потока
             e.printStackTrace();
         }
@@ -134,27 +129,33 @@ public class GameView extends SurfaceView implements Runnable{
     // метод обработки касания экрана (для управления самолётом)
     @Override
     public boolean onTouchEvent(MotionEvent event) {
+        // handle screen touch events
+        switch(event.getAction()) {
+            case MotionEvent.ACTION_DOWN: // click
+                // Set initial position of plane to middle of the screen along the Y-axis
+                float planeWidth = flight.getWidth(); // Assuming getWidth() returns the width of the plane
+                float planeHeight = flight.getHeight(); // Assuming getHeight() returns the height of the plane
+                int middleX = (int) (screenX / 2 - planeWidth / 2); // Calculate middle X-coordinate
+                int middleY = (int) (screenY / 2 - planeHeight); // Calculate Y-coordinate of the bottom of the plane
+                flight.setX(middleX); // Set X-coordinate of plane
+                flight.setY(middleY); // Set Y-coordinate of plane
+                flight.setGoingUp(true); // Set the plane to go up
 
-        // обработка событий касания экрана
-        switch (event.getAction()) {
-            case MotionEvent.ACTION_DOWN: // нажатие
-                // если пользователь нажал на левую сторону экрана
-                if (event.getX() < (screenX / 2)) {
-                    // то движение самолёта вверх
-                    flight.setGoingUp(true);
-                } else if (event.getX() >= (screenX / 2)){
-
+                break;
+            case MotionEvent.ACTION_MOVE: // move around the screen
+                // Check if the user pressed on the left side of the screen
+                if (event.getY() < (screenX / 2)) {
+                    flight.setGoingUp(true); // Set the plane to go up
+                } else if (event.getY() >= (screenX / 2)){
+                    flight.setGoingUp(false); // Set the plane to go down
                 }
                 break;
-            case MotionEvent.ACTION_MOVE: // движение по экрану
-
-                break;
-            case MotionEvent.ACTION_UP: // отпускание
-                // при отпускании экрана самолёт начнёт снижаться
-                flight.setGoingUp(false);
+            case MotionEvent.ACTION_UP: // release
+                flight.setGoingUp(false); // Set the plane to go down
                 break;
         }
 
-        return true; // активация обработки касания экрана
+        return true; // activate screen touch handling
     }
+
 }
